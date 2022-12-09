@@ -1,0 +1,106 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go Build
+
+on:
+  push:
+    branches: [ master ]
+    tags:
+    - 'v*'
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout codes
+      uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+
+    - name: Build
+      run: go build -o ghf-linux .
+      
+    - uses: actions/upload-artifact@v3
+      with:
+        name: go-http-fileserver-linux
+        path: ghf-linux
+
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout codes
+      uses: actions/checkout@v3
+    
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+
+    - name: Build
+      run: go build -o ghf-macos .
+      
+    - uses: actions/upload-artifact@v3
+      with:
+        name: go-http-fileserver-macos
+        path: ghf-macos
+
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - name: Checkout codes
+      uses: actions/checkout@v3
+    
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.19
+
+    - name: Build
+      run: go build -o ghf-windows.exe .
+      
+    - uses: actions/upload-artifact@v3
+      with:
+        name: go-http-fileserver-windows
+        path: ghf-windows.exe
+
+  create-release:
+    if: startsWith(github.event.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    needs:
+      - build-linux
+      - build-macos
+      - build-windows
+    steps:
+    
+    - name: Download all workflow run artifacts
+      uses: actions/download-artifact@v3
+      
+    - name: Pack built files
+      run: |
+        zip go-http-fileserver-linux.zip ghf-linux
+        zip go-http-fileserver-macos.zip ghf-macos
+        zip go-http-fileserver-windows.zip ghf-windows.exe
+        
+    - name: Create release
+      uses: softprops/action-gh-release@v1
+      with:
+        name: GHF - ${GITHUB_REF_NAME}
+        generate_release_notes: true
+        files: |
+          go-http-fileserver-linux.zip
+          go-http-fileserver-macos.zip
+          go-http-fileserver-windows.zip
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+
+        
