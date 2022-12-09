@@ -99,7 +99,7 @@ jobs:
     - name: Create release
       uses: softprops/action-gh-release@v1
       with:
-        name: GHF - ${GITHUB_REF_NAME}
+        name: GHF - ${{ env.GITHUB_REF_NAME }}
         generate_release_notes: true
         files: |
           linux.zip
