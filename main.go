@@ -15,7 +15,7 @@ var (
 
 func init() {
 	listenPort = flag.Int("p", 0, "Listen to which port")
-	listenHost = flag.String("h", "localhost", "Listen to which host")
+	listenHost = flag.String("l", "localhost", "Listen to which host")
 }
 
 func main() {
