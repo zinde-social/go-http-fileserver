@@ -86,9 +86,15 @@ jobs:
       
     - name: Pack built files
       run: |
-        zip go-http-fileserver-linux.zip ghf-linux
-        zip go-http-fileserver-macos.zip ghf-macos
-        zip go-http-fileserver-windows.zip ghf-windows.exe
+        cd go-http-fileserver-linux
+        zip ../linux.zip ./*
+        cd ../
+        cd go-http-fileserver-macos
+        zip ../macos.zip ./*
+        cd ../
+        cd go-http-fileserver-windows
+        zip ../windows.zip ./*
+        cd ../
         
     - name: Create release
       uses: softprops/action-gh-release@v1
@@ -96,9 +102,9 @@ jobs:
         name: GHF - ${GITHUB_REF_NAME}
         generate_release_notes: true
         files: |
-          go-http-fileserver-linux.zip
-          go-http-fileserver-macos.zip
-          go-http-fileserver-windows.zip
+          linux.zip
+          macos.zip
+          windows.zip
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
